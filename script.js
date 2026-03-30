@@ -1,3 +1,31 @@
+const APP_VERSION = "v2";
+const savedVersion = localStorage.getItem("app_version");
+
+if (savedVersion !== APP_VERSION) {
+  localStorage.setItem("streak", "0");
+  localStorage.setItem("exercisesDone", "0");
+  localStorage.setItem("progress", "0");
+  localStorage.setItem("quoteIndex", "0");
+  localStorage.setItem("tipIndex", "0");
+
+  localStorage.setItem("sb_streak", "0");
+  localStorage.removeItem("sb_last_date");
+  localStorage.setItem(
+    "sb_stats",
+    JSON.stringify({
+      vocabulary: { correct: 0, total: 0 },
+      grammar: { correct: 0, total: 0 },
+      collocation: { correct: 0, total: 0 }
+    })
+  );
+  localStorage.setItem("sb_recent", JSON.stringify([]));
+  localStorage.setItem("sb_total_done", "0");
+  localStorage.setItem("seenVocab", JSON.stringify([]));
+  localStorage.setItem("seenCollocation", JSON.stringify([]));
+
+  localStorage.setItem("app_version", APP_VERSION);
+}
+
 const vocabularyData = [
   {
       word: "abandon",
@@ -3624,13 +3652,17 @@ let grammarScore = 0;
 let grammarAnswers = [];
 let currentTense = null;
 let isMixedMode = false;
+let selectedAnswer = null;
+let seenVocab = new Set(JSON.parse(localStorage.getItem("seenVocab")) || []);
+let seenCollocation = new Set(JSON.parse(localStorage.getItem("seenCollocation")) || []);
+let seenGrammar = new Set(JSON.parse(localStorage.getItem("seenGrammar")) || []);
 
 const STORAGE_KEYS = {
   streak: "sb_streak",
   lastDate: "sb_last_date",
   stats: "sb_stats",
   recent: "sb_recent",
-  totalDone: "sb_total_done"
+  totalDone: "exercisesDone"
 };
 
 function initStats() {
@@ -3690,6 +3722,33 @@ function updateProgress(type, isCorrect) {
 }
 
 function getProgressPercent(type) {
+  if (type === "vocabulary") {
+    const vocabTotal = vocabularyData.length;
+    if (!vocabTotal) {
+      return 0;
+    }
+
+    return Math.min(Math.round((seenVocab.size / vocabTotal) * 100), 100);
+  }
+
+  if (type === "collocation") {
+    const collocationTotal = collocationData.length;
+    if (!collocationTotal) {
+      return 0;
+    }
+
+    return Math.min(Math.round((seenCollocation.size / collocationTotal) * 100), 100);
+  }
+
+  if (type === "grammar") {
+    const grammarTotal = grammarQuizData.length;
+    if (!grammarTotal) {
+      return 0;
+    }
+
+    return Math.min(Math.round((seenGrammar.size / grammarTotal) * 100), 100);
+  }
+
   const stats = JSON.parse(localStorage.getItem(STORAGE_KEYS.stats));
   const data = stats[type];
 
@@ -3706,9 +3765,9 @@ function recordRecentPerformance(label, scoreValue, totalValue) {
   localStorage.setItem(STORAGE_KEYS.recent, JSON.stringify(recent.slice(0, 3)));
 }
 
-function updateTotalExercises(count) {
+function updateTotalExercises() {
   const total = parseInt(localStorage.getItem(STORAGE_KEYS.totalDone), 10) || 0;
-  localStorage.setItem(STORAGE_KEYS.totalDone, String(total + count));
+  localStorage.setItem(STORAGE_KEYS.totalDone, String(total + 1));
 }
 
 function getTotalExercises() {
@@ -3831,6 +3890,14 @@ function startUTBKRotation() {
   }, 1000 * 60 * 60);
 }
 
+function resetOptionState(containerSelector) {
+  document.querySelectorAll(`${containerSelector} .option-btn`).forEach((element) => {
+    element.classList.remove("selected", "correct", "wrong");
+    element.style.backgroundColor = "";
+    element.style.color = "";
+  });
+}
+
 function openDBPopup() {
   const popup = document.getElementById("dbPopup");
   if (!popup) {
@@ -3898,6 +3965,8 @@ function showCard() {
   }
 
   const word = filteredVocabulary[currentIndex];
+  seenVocab.add(word.word);
+  localStorage.setItem("seenVocab", JSON.stringify([...seenVocab]));
   const difficultyTone =
     word.difficulty === "hard"
       ? "background:#eed6d7;color:#8d545d;"
@@ -3934,6 +4003,8 @@ function showCard() {
       fill: "forwards"
     }
   );
+
+  renderProgressUI();
 }
 
 function speakWord(word) {
@@ -4047,6 +4118,8 @@ function showCollocation() {
   }
 
   const c = filteredCollocations[collocationIndex];
+  seenCollocation.add(c.phrase);
+  localStorage.setItem("seenCollocation", JSON.stringify([...seenCollocation]));
   const difficultyTone =
     c.difficulty === "hard"
       ? "background:#eed6d7;color:#8d545d;"
@@ -4078,6 +4151,8 @@ function showCollocation() {
       fill: "forwards"
     }
   );
+
+  renderProgressUI();
 }
 
 function nextCollocation() {
@@ -4129,6 +4204,7 @@ function startColQuiz() {
 
 function showCollocationQuestion() {
   const q = colQuiz[colQIndex];
+  selectedAnswer = null;
 
   document.getElementById("colQuizContainer").innerHTML = `
     <div class="card">
@@ -4147,6 +4223,8 @@ function showCollocationQuestion() {
       </div>
     </div>
   `;
+
+  resetOptionState("#colQuizContainer");
 }
 
 function showColQuestion() {
@@ -4208,7 +4286,7 @@ function showCollocationResult() {
   colUserAnswers.forEach((item) => {
     updateProgress("collocation", item.isCorrect);
   });
-  updateTotalExercises(colQuiz.length || 0);
+  updateTotalExercises();
   recordRecentPerformance("Collocation Quiz", colScore, colQuiz.length || 5);
 
   let feedback = "";
@@ -4333,6 +4411,7 @@ function startMixedGrammarQuiz() {
 
 function showGrammarQuestion() {
   const q = grammarQuiz[grammarIndex];
+  selectedAnswer = null;
 
   document.getElementById("grammarQuizContainer").innerHTML = `
     <div class="card">
@@ -4347,12 +4426,18 @@ function showGrammarQuestion() {
         .join("")}
     </div>
   `;
+
+  resetOptionState("#grammarQuizContainer");
 }
 
 function answerGrammar(selected) {
   const q = grammarQuiz[grammarIndex];
   const buttons = document.querySelectorAll("#grammarQuizContainer .option-btn");
   const isCorrect = selected === q.answer;
+  const currentQuestionId = q.question;
+
+  seenGrammar.add(currentQuestionId);
+  localStorage.setItem("seenGrammar", JSON.stringify([...seenGrammar]));
 
   buttons.forEach((btn) => {
     btn.disabled = true;
@@ -4399,7 +4484,7 @@ function showGrammarResult() {
   grammarAnswers.forEach((item) => {
     updateProgress("grammar", item.isCorrect);
   });
-  updateTotalExercises(grammarQuiz.length || 0);
+  updateTotalExercises();
   recordRecentPerformance(
     isMixedMode ? "Mixed Tense Quiz" : `${currentTense || "Grammar"} Quiz`,
     grammarScore,
@@ -4506,6 +4591,7 @@ function startQuiz() {
 
 function showQuestion() {
   const q = quizQuestions[currentQuestionIndex];
+  selectedAnswer = null;
 
   document.getElementById("quizContainer").innerHTML = `
     <div class="card">
@@ -4524,6 +4610,8 @@ function showQuestion() {
       </div>
     </div>
   `;
+
+  resetOptionState("#quizContainer");
 }
 
 function selectAnswer(selected) {
@@ -4588,7 +4676,7 @@ function showResult() {
   userAnswers.forEach((item) => {
     updateProgress("vocabulary", item.isCorrect);
   });
-  updateTotalExercises(quizQuestions.length || 0);
+  updateTotalExercises();
   recordRecentPerformance("Vocabulary Quiz", score, quizQuestions.length || 5);
 
   let feedback = "";
