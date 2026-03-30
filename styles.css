@@ -93,10 +93,6 @@ button:active {
   box-shadow: 0 20px 50px rgba(139, 94, 87, 0.1);
 }
 
-.home-action-card:hover {
-  filter: brightness(1.02);
-}
-
 .progress-shell {
   display: grid;
   gap: 1.25rem;
@@ -282,14 +278,6 @@ button:active {
   color: #894b4c;
   font-weight: 700;
   box-shadow: 0 12px 30px rgba(137, 75, 76, 0.08);
-}
-
-.back-button:hover,
-.flashcard-button:hover,
-.grammar-list button:hover,
-.difficulty-filter button:hover,
-.speak-button:hover {
-  transform: translateY(-1px);
 }
 
 .difficulty-filter {
@@ -557,9 +545,23 @@ button:active {
   box-shadow: 0 10px 24px rgba(139, 94, 87, 0.05);
 }
 
-.option-btn:hover {
-  background: #fed6d6;
-  filter: brightness(1.02);
+@media (hover: hover) and (pointer: fine) {
+  .home-action-card:hover {
+    filter: brightness(1.02);
+  }
+
+  .back-button:hover,
+  .flashcard-button:hover,
+  .grammar-list button:hover,
+  .difficulty-filter button:hover,
+  .speak-button:hover {
+    transform: translateY(-1px);
+  }
+
+  .option-btn:hover {
+    background: #fed6d6;
+    filter: brightness(1.02);
+  }
 }
 
 .dot {
