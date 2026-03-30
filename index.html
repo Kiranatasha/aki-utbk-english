@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Speak Better</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed": "#ffdada",
+              "on-error-container": "#93000a",
+              "on-surface": "#1d1b1a",
+              "surface": "#fdf8f5",
+              "primary": "#894b4c",
+              "inverse-on-surface": "#f5f0ed",
+              "on-tertiary-container": "#fefff6",
+              "secondary-fixed-dim": "#e3bebd",
+              "error": "#ba1a1a",
+              "surface-container-highest": "#e6e2df",
+              "inverse-surface": "#32302e",
+              "on-primary-fixed-variant": "#6f3637",
+              "surface-variant": "#e6e2df",
+              "secondary": "#745757",
+              "on-tertiary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "surface-dim": "#ded9d6",
+              "on-tertiary-fixed-variant": "#3d4b35",
+              "primary-fixed-dim": "#ffb3b2",
+              "outline": "#857372",
+              "on-surface-variant": "#524343",
+              "tertiary": "#53614a",
+              "background": "#fdf8f5",
+              "error-container": "#ffdad6",
+              "on-primary-container": "#fffeff",
+              "primary-fixed": "#ffdad9",
+              "on-background": "#1d1b1a",
+              "on-secondary": "#ffffff",
+              "on-tertiary-fixed": "#131f0d",
+              "surface-bright": "#fdf8f5",
+              "tertiary-container": "#6b7a62",
+              "on-primary-fixed": "#380b0e",
+              "on-secondary-fixed-variant": "#5b4040",
+              "tertiary-fixed-dim": "#bccbaf",
+              "surface-container-high": "#ece7e4",
+              "outline-variant": "#d7c1c1",
+              "primary-container": "#a66363",
+              "tertiary-fixed": "#d8e8ca",
+              "surface-container-low": "#f8f3f0",
+              "on-secondary-fixed": "#2b1616",
+              "surface-tint": "#8b4d4d",
+              "on-primary": "#ffffff",
+              "surface-container": "#f2edea",
+              "on-secondary-container": "#795b5b",
+              "inverse-primary": "#ffb3b2",
+              "secondary-container": "#fed6d6",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              headline: ["Manrope", "sans-serif"],
+              body: ["Manrope", "sans-serif"],
+              label: ["Manrope", "sans-serif"]
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              "3xl": "1.5rem",
+              full: "9999px"
+            }
+          }
+        }
+      };
+    </script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+    <div class="page-shell">
+      <div class="db-popup" id="dbPopup" hidden>
+        <div class="db-overlay" id="dbOverlay"></div>
+        <div class="db-card">
+          <h2>Database Status</h2>
+          <div class="db-row">Vocabulary <strong id="dbVocab"></strong></div>
+          <div class="db-row">Collocations <strong id="dbColl"></strong></div>
+          <div class="db-row">Grammar <strong id="dbGrammar"></strong></div>
+          <button class="flashcard-button flashcard-button-primary" id="dbCloseBtn" type="button">
+            Close
+          </button>
+        </div>
+      </div>
+
+      <header class="fixed top-0 left-0 right-0 z-50 bg-[#fdf8f5] font-manrope antialiased">
+        <nav class="flex justify-between items-center w-full px-6 py-4 max-w-full mx-auto">
+          <button
+            class="text-2xl font-bold tracking-tighter text-[#894b4c]"
+            onclick="showPage('landingPage')"
+            type="button"
+          >
+            Speak Better
+          </button>
+          <div class="flex items-center gap-3 md:gap-6">
+            <button
+              class="text-[#894b4c] font-semibold hover:bg-[#f2edea]/50 transition-colors px-3 py-1 rounded-lg"
+              onclick="showPage('landingPage')"
+              type="button"
+            >
+              Home
+            </button>
+            <button
+              class="text-[#1d1b1a] hover:bg-[#f2edea]/50 transition-colors px-3 py-1 rounded-lg"
+              onclick="showPage('vocabPage')"
+              type="button"
+            >
+              Practice
+            </button>
+            <button
+              id="settingsButton"
+              class="material-symbols-outlined text-[#894b4c] p-2 hover:bg-[#f2edea]/50 rounded-full transition-colors"
+              type="button"
+            >
+              settings
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      <main class="pt-24 pb-20">
+        <div class="page" id="landingPage" style="display: block">
+          <section class="max-w-7xl mx-auto px-6 py-12 md:py-24">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+              <div class="space-y-8 order-2 lg:order-1">
+                <div class="space-y-4">
+                  <span
+                    class="inline-block px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-sm font-semibold tracking-wide uppercase"
+                  >
+                    For the Situmorangs
+                  </span>
+                  <h1
+                    class="text-5xl md:text-7xl font-bold text-primary tracking-tight leading-[1.1]"
+                  >
+                    Welcome, <br />Situmorang Family 🤍
+                  </h1>
+                  <p
+                    class="text-xl md:text-2xl text-on-surface-variant font-light max-w-lg leading-relaxed"
+                  >
+                    Built with extra love for this UTBK season—let’s make it count.
+                  </p>
+                </div>
+                <div class="flex gap-4 flex-col sm:flex-row">
+                  <button
+                    class="primary-gradient ui-cta-primary text-white px-8 py-4 rounded-3xl font-semibold hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/10"
+                    onclick="showPage('vocabPage')"
+                    type="button"
+                  >
+                    Start Today's Practice
+                  </button>
+                  <button
+                    class="ui-cta-secondary px-8 py-4 rounded-3xl font-semibold"
+                    id="continuePracticeButton"
+                    onclick="showPage('grammarPage'); startMixedGrammarQuiz();"
+                    type="button"
+                  >
+                    Continue Practice
+                  </button>
+                </div>
+                <div class="home-stat-row">
+                  <div class="home-stat-badge">
+                    <span class="material-symbols-outlined">local_fire_department</span>
+                    <span id="homeStreakText">0 day streak</span>
+                  </div>
+                  <div class="home-stat-badge">
+                    <span class="material-symbols-outlined">task_alt</span>
+                    <span id="homeExercisesText">0 exercises done</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="order-1 lg:order-2 relative">
+                <div class="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl">
+                  <img
+                    alt="Cozy workspace"
+                    class="w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAonlTua_erVn5JBI6ac7KiPUJL2tvLTl1jX5LtgbX6TB_t18TdZwfyMa2vw2CSviNn9wsjbxK0KWkt5GqIA7qqFEzS2S6aNgP7XBVPqr5dS1PfwCeJyYvDuaF0t5qJCCr1_SkDnZVlSr9VWrsRtdSOswPyT4DWPgfkHazeojcR8a2sg-G3IYZx_dUvbZhZSDxyeZzIepIyXiwKbzlBt9NlG52HEFzJPhT3Ve1p9mwHlfP5xGB1mPExyDlDTYXF2g184P2wEIbnQ60"
+                  />
+                </div>
+                <div
+                  class="absolute -bottom-6 -left-6 glass-effect p-6 rounded-2xl shadow-xl max-w-xs border border-white/20"
+                >
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-3xl"
+                      style="font-variation-settings: 'FILL' 1;"
+                    >
+                      auto_awesome
+                    </span>
+                    <p class="text-sm font-medium text-on-surface-variant italic" id="dailyQuote">
+                      "Success is the sum of small efforts, repeated day in and day out."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="max-w-7xl mx-auto px-6 py-20">
+            <h2 class="text-3xl font-bold text-on-surface mb-12 flex items-center gap-4">
+              Core Study Areas
+              <div class="h-[2px] flex-grow bg-surface-container-highest"></div>
+            </h2>
+            <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+              <div
+                class="group home-action-card bg-surface-container-lowest p-8 rounded-3xl transition-all hover:-translate-y-2 hover:shadow-xl relative overflow-hidden"
+              >
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed/20 rounded-full -mr-16 -mt-16 blur-3xl"
+                ></div>
+                <div
+                  class="w-14 h-14 rounded-2xl bg-primary-fixed flex items-center justify-center mb-6"
+                >
+                  <span class="material-symbols-outlined text-primary text-3xl">menu_book</span>
+                </div>
+                <h3 class="text-2xl font-bold text-on-surface mb-3">Vocabulary</h3>
+                <p class="text-on-surface-variant mb-8 leading-relaxed">
+                  Expand your lexicon with curated UTBK-essential words and daily challenges.
+                </p>
+                <button
+                  class="w-full py-3 rounded-2xl bg-secondary-container text-on-secondary-container font-semibold hover:bg-primary-fixed-dim transition-colors flex items-center justify-center gap-2"
+                  onclick="showPage('vocabPage')"
+                  type="button"
+                >
+                  Explore Words
+                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              </div>
+
+              <div
+                class="group home-action-card bg-surface-container-lowest p-8 rounded-3xl transition-all hover:-translate-y-2 hover:shadow-xl relative overflow-hidden"
+              >
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-secondary-fixed/20 rounded-full -mr-16 -mt-16 blur-3xl"
+                ></div>
+                <div
+                  class="w-14 h-14 rounded-2xl bg-secondary-fixed flex items-center justify-center mb-6"
+                >
+                  <span class="material-symbols-outlined text-secondary text-3xl">rule</span>
+                </div>
+                <h3 class="text-2xl font-bold text-on-surface mb-3">Grammar</h3>
+                <p class="text-on-surface-variant mb-8 leading-relaxed">
+                  Master the structure of language with interactive drills and clear explanations.
+                </p>
+                <button
+                  class="w-full py-3 rounded-2xl bg-primary-container text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                  onclick="showPage('grammarPage')"
+                  type="button"
+                >
+                  Practice Drills
+                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              </div>
+
+              <div
+                class="group home-action-card bg-surface-container-lowest p-8 rounded-3xl transition-all hover:-translate-y-2 hover:shadow-xl relative overflow-hidden"
+              >
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-tertiary-fixed/20 rounded-full -mr-16 -mt-16 blur-3xl"
+                ></div>
+                <div
+                  class="w-14 h-14 rounded-2xl bg-tertiary-fixed flex items-center justify-center mb-6"
+                >
+                  <span class="material-symbols-outlined text-tertiary text-3xl">link</span>
+                </div>
+                <h3 class="text-2xl font-bold text-on-surface mb-3">Collocations</h3>
+                <p class="text-on-surface-variant mb-8 leading-relaxed">
+                  Learn how words naturally fit together to sound more native and fluent.
+                </p>
+                <button
+                  class="w-full py-3 rounded-2xl bg-tertiary text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                  onclick="showPage('collocationPage')"
+                  type="button"
+                >
+                  Learn Phrases
+                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="max-w-7xl mx-auto px-6 py-8 md:py-12" id="progressSection">
+            <div class="progress-shell">
+              <div class="progress-header">
+                <div>
+                  <span class="section-pill">View Progress</span>
+                  <h2>Daily momentum looks good.</h2>
+                  <p>Keep the streak alive with one more short round today.</p>
+                </div>
+                <button
+                  class="flashcard-button flashcard-button-primary"
+                  onclick="showPage('vocabPage')"
+                  type="button"
+                >
+                  Practice Again
+                </button>
+              </div>
+
+              <div class="progress-grid">
+                <article class="progress-card streak-card">
+                  <h3>Daily Streak</h3>
+                  <div class="streak-icons" aria-label="Daily streak" id="streakCount">🔥</div>
+                  <p>You're showing up consistently this week.</p>
+                </article>
+
+                <article class="progress-card">
+                  <h3>Vocabulary</h3>
+                  <div class="progress-bar"><div class="progress-fill vocab-fill" id="vocabBar"></div></div>
+                  <p id="vocabPercent">0% complete</p>
+                </article>
+
+                <article class="progress-card">
+                  <h3>Grammar</h3>
+                  <div class="progress-bar"><div class="progress-fill grammar-fill" id="grammarBar"></div></div>
+                  <p id="grammarPercent">0% complete</p>
+                </article>
+
+                <article class="progress-card">
+                  <h3>Collocations</h3>
+                  <div class="progress-bar"><div class="progress-fill collocation-fill" id="collBar"></div></div>
+                  <p id="collPercent">0% complete</p>
+                </article>
+              </div>
+
+              <div class="progress-card recent-card">
+                <h3>Recent Performance</h3>
+                <div class="recent-list" id="recentPerformance">
+                  <div class="recent-item">
+                    <span>No quiz history yet</span>
+                    <strong>--</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="max-w-5xl mx-auto px-6 py-24 text-center">
+            <div class="bg-primary-fixed/30 rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
+              <span
+                class="material-symbols-outlined text-primary/10 text-[12rem] absolute -top-10 -left-10 select-none"
+              >
+                format_quote
+              </span>
+              <h2
+                class="text-3xl md:text-5xl font-light italic text-primary leading-tight relative z-10"
+                id="quote-text"
+              >
+                "You don't have to be perfect. <br class="hidden md:block" /><span class="font-bold not-italic">Just consistent.</span>"
+              </h2>
+              <div class="mt-8 flex justify-center gap-2 quote-dots" aria-hidden="true">
+                <button class="dot is-active" type="button" data-quote="0"></button>
+                <button class="dot" type="button" data-quote="1"></button>
+                <button class="dot" type="button" data-quote="2"></button>
+              </div>
+            </div>
+          </section>
+
+          <section class="max-w-7xl mx-auto px-6 py-20">
+            <div
+              class="bg-secondary-container/30 rounded-[3rem] p-12 md:p-16 border border-secondary-fixed-dim/50"
+            >
+              <div class="max-w-3xl mx-auto text-center space-y-8">
+                <div
+                  class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-fixed text-on-primary-fixed text-sm font-bold tracking-widest uppercase"
+                >
+                  <span
+                    class="material-symbols-outlined text-sm"
+                    style="font-variation-settings: 'FILL' 1;"
+                  >
+                    lightbulb
+                  </span>
+                  UTBK Strategy of the Day
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">Mastering Coherence</h2>
+                <div
+                  class="p-8 md:p-10 bg-white/60 backdrop-blur-sm rounded-3xl border border-white/40 shadow-sm"
+                >
+                  <p class="text-xl md:text-2xl text-on-surface italic leading-relaxed" id="utbkTip">
+                    "Look for signal words like
+                    <span class="font-bold text-primary">"however"</span> or
+                    <span class="font-bold text-primary">"consequently"</span> to understand
+                    the relationship between sentences. These transitions are the keys to solving
+                    text structure questions quickly."
+                  </p>
+                </div>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-6 pt-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center"
+                    >
+                      <span class="material-symbols-outlined text-secondary">trending_up</span>
+                    </div>
+                    <span class="text-on-surface-variant font-medium">
+                      Difficulty: Intermediate
+                    </span>
+                  </div>
+                  <div class="hidden md:block w-px h-6 bg-outline-variant"></div>
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center"
+                    >
+                      <span class="material-symbols-outlined text-tertiary">schedule</span>
+                    </div>
+                    <span class="text-on-surface-variant font-medium">
+                      Reading Speed Boost: +15%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="page" id="vocabPage">
+          <section class="study-page max-w-7xl mx-auto px-6 py-8 md:py-14">
+            <button class="back-button" onclick="showPage('landingPage')" type="button">
+              ← Back
+            </button>
+
+            <div class="section-intro">
+              <span class="section-pill">Vocabulary Practice</span>
+              <h1>Study one word at a time.</h1>
+              <p>
+                Move slowly, notice the meaning, and let each example sentence give the word
+                context.
+              </p>
+            </div>
+
+            <div class="study-layout">
+              <div class="study-column">
+                <div class="difficulty-filter difficulty" id="vocabularyDifficulty">
+                  <button class="active" onclick="setDifficulty('all')" type="button">All</button>
+                  <button onclick="setDifficulty('easy')" type="button">Easy</button>
+                  <button onclick="setDifficulty('medium')" type="button">Medium</button>
+                  <button onclick="setDifficulty('hard')" type="button">Hard</button>
+                </div>
+
+                <div class="flashcard-card" id="card" aria-live="polite"></div>
+
+                <div class="flashcard-controls" aria-label="Flashcard controls">
+                  <button class="flashcard-button" onclick="prevCard()" type="button">
+                    Previous
+                  </button>
+                  <button
+                    class="flashcard-button flashcard-button-primary"
+                    onclick="shuffleCard()"
+                    type="button"
+                  >
+                    Shuffle
+                  </button>
+                  <button class="flashcard-button" onclick="nextCard()" type="button">Next</button>
+                </div>
+
+                <p class="flashcard-helper">
+                  Take your time—focus on understanding, not memorizing.
+                </p>
+              </div>
+
+              <div class="study-column">
+                <div id="quizSection" class="quiz-section">
+                  <button
+                    class="flashcard-button flashcard-button-primary"
+                    onclick="startQuiz()"
+                    type="button"
+                  >
+                    Start Quiz
+                  </button>
+                  <div id="quizContainer" class="quiz-container"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="page" id="grammarPage">
+          <section class="study-page max-w-7xl mx-auto px-6 py-8 md:py-14">
+            <button class="back-button" onclick="showPage('landingPage')" type="button">
+              ← Back
+            </button>
+
+            <div class="section-intro">
+              <span class="section-pill">Grammar Studio</span>
+              <h1>See how sentences are built.</h1>
+              <p>
+                Grammar practice here is kept gentle and structured. Use this space to focus on
+                tense patterns and sentence clarity without rushing.
+              </p>
+            </div>
+
+            <div id="grammarSection" class="study-layout">
+              <div class="study-column">
+                <div id="grammarList" class="grammar-list"></div>
+                <div class="card grammar-content-card" id="grammarContent"></div>
+                <div class="quiz-divider" aria-hidden="true"></div>
+                <button
+                  class="flashcard-button mixed-grammar-button"
+                  onclick="startMixedGrammarQuiz()"
+                  type="button"
+                >
+                  🎯 Mixed Tense Quiz
+                </button>
+              </div>
+
+              <div class="study-column">
+                <div id="grammarQuizContainer" class="quiz-container"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="page" id="collocationPage">
+          <section class="study-page max-w-7xl mx-auto px-6 py-8 md:py-14">
+            <button class="back-button" onclick="showPage('landingPage')" type="button">
+              ← Back
+            </button>
+
+            <div class="section-intro">
+              <span class="section-pill">Collocation Lab</span>
+              <h1>Learn which words naturally belong together.</h1>
+              <p>
+                Strong collocations make writing sound more fluent. Use this section to notice
+                patterns and build better word combinations.
+              </p>
+            </div>
+
+            <div id="collocationSection" class="study-layout">
+              <div class="study-column">
+                <div class="difficulty-filter difficulty">
+                  <button
+                    class="active"
+                    onclick="setCollocationDifficulty('all')"
+                    type="button"
+                  >
+                    All
+                  </button>
+                  <button onclick="setCollocationDifficulty('easy')" type="button">Easy</button>
+                  <button onclick="setCollocationDifficulty('medium')" type="button">Medium</button>
+                  <button onclick="setCollocationDifficulty('hard')" type="button">Hard</button>
+                </div>
+
+                <div class="flashcard-card" id="collocationCard" aria-live="polite"></div>
+
+                <div class="flashcard-controls" aria-label="Collocation controls">
+                  <button class="flashcard-button" onclick="prevCollocation()" type="button">
+                    Previous
+                  </button>
+                  <button
+                    class="flashcard-button flashcard-button-primary"
+                    onclick="shuffleCollocation()"
+                    type="button"
+                  >
+                    Shuffle
+                  </button>
+                  <button class="flashcard-button" onclick="nextCollocation()" type="button">
+                    Next
+                  </button>
+                </div>
+              </div>
+
+              <div class="study-column">
+                <div class="quiz-divider" aria-hidden="true"></div>
+                <button
+                  class="flashcard-button flashcard-button-primary"
+                  onclick="startColQuiz()"
+                  type="button"
+                >
+                  Start Quiz
+                </button>
+                <div id="colQuizContainer" class="quiz-container"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer
+        class="bg-[#f2edea] full-width py-12 flex flex-col items-center justify-center w-full px-8 text-center mt-auto"
+      >
+        <div class="mb-6">
+          <span class="text-[#894b4c] font-bold text-xl">Speak Better</span>
+        </div>
+        <p class="text-[#53614a] text-sm font-manrope leading-relaxed tracking-wide">
+          Curated for the Situmorang Family by Kiranatasha
+        </p>
+        <div class="mt-8 flex gap-4">
+          <span class="material-symbols-outlined text-[#53614a]/30">favorite</span>
+        </div>
+      </footer>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
